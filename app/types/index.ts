@@ -1,0 +1,70 @@
+// FPL-based player stats for comparison
+export interface PlayerStats {
+    attacking: {
+        goals: number;
+        expectedGoals: number;
+        threat: number;  // FPL threat score
+    };
+    playmaking: {
+        assists: number;
+        expectedAssists: number;
+        creativity: number;  // FPL creativity score
+    };
+    fplValue: {
+        pointsPerGame: number;
+        bonus: number;
+        form: number;
+    };
+}
+
+export interface Player {
+    id: number;
+    name: string;
+    position: string;
+    team: string;
+    photo?: string;
+    stats?: PlayerStats;
+}
+
+// Raw FPL API types
+export interface FPLElement {
+    id: number;
+    web_name: string;
+    first_name: string;
+    second_name: string;
+    element_type: number; // 1=GKP, 2=DEF, 3=MID, 4=FWD
+    team: number;
+    photo: string;
+    goals_scored: number;
+    assists: number;
+    clean_sheets: number;
+    goals_conceded: number;
+    threat: string;
+    creativity: string;
+    influence: string;
+    expected_goals: string;
+    expected_assists: string;
+    minutes: number;
+    status: string;
+    // FPL Value stats
+    bonus: number;
+    form: string;
+    points_per_game: string;
+    total_points: number;
+}
+
+export interface FPLTeam {
+    id: number;
+    name: string;
+    short_name: string;
+}
+
+export interface FPLBootstrapResponse {
+    elements: FPLElement[];
+    teams: FPLTeam[];
+    element_types: Array<{
+        id: number;
+        singular_name: string;
+        singular_name_short: string;
+    }>;
+}
