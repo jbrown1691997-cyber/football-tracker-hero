@@ -1,16 +1,18 @@
 'use client';
 
-import { type Player } from '@/app/types';
+import { type Player, type PlayerFixture } from '@/app/types';
 import { cn } from '@/lib/utils';
+import { FixtureTicker } from './fixture-ticker';
 
 interface PlayerCardProps {
     player: Player;
     side?: 'left' | 'right';
     isDraggable?: boolean;
+    fixtures?: PlayerFixture[];
     className?: string;
 }
 
-export function PlayerCard({ player, side, isDraggable = false, className }: PlayerCardProps) {
+export function PlayerCard({ player, side, isDraggable = false, fixtures, className }: PlayerCardProps) {
     const handleDragStart = (e: React.DragEvent) => {
         e.dataTransfer.setData('application/json', JSON.stringify(player));
         e.dataTransfer.effectAllowed = 'copy';
@@ -47,6 +49,18 @@ export function PlayerCard({ player, side, isDraggable = false, className }: Pla
             <h3 className="text-lg font-semibold text-white">{player.name}</h3>
             <p className="text-sm text-gray-400">{player.position}</p>
             <p className="text-xs text-gray-500">{player.team}</p>
+
+            {/* Fixture Ticker */}
+            {fixtures && fixtures.length > 0 && (
+                <FixtureTicker
+                    fixtures={fixtures}
+                    className={cn(
+                        side === 'left' && 'items-start',
+                        side === 'right' && 'items-end',
+                    )}
+                />
+            )}
         </div>
     );
 }
+

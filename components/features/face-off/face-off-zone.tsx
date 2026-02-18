@@ -1,15 +1,17 @@
 'use client';
 
-import { type Player } from '@/app/types';
+import { type Player, type PlayerFixture } from '@/app/types';
 import { useComparisonStore } from '@/lib/store/comparison-store';
 import { PlayerCard } from './player-card';
 import { cn } from '@/lib/utils';
 
 interface FaceOffZoneProps {
+    fixturesA?: PlayerFixture[];
+    fixturesB?: PlayerFixture[];
     className?: string;
 }
 
-export function FaceOffZone({ className }: FaceOffZoneProps) {
+export function FaceOffZone({ fixturesA, fixturesB, className }: FaceOffZoneProps) {
     const { playerA, playerB, swapPlayers, clearComparison } = useComparisonStore();
 
     const handleDrop = (slot: 'A' | 'B') => (e: React.DragEvent) => {
@@ -43,7 +45,7 @@ export function FaceOffZone({ className }: FaceOffZoneProps) {
                     )}
                 >
                     {playerA ? (
-                        <PlayerCard player={playerA} side="left" />
+                        <PlayerCard player={playerA} side="left" fixtures={fixturesA} />
                     ) : (
                         <div className="flex items-center justify-center h-full text-gray-400">
                             Drop Player A
@@ -73,7 +75,7 @@ export function FaceOffZone({ className }: FaceOffZoneProps) {
                     )}
                 >
                     {playerB ? (
-                        <PlayerCard player={playerB} side="right" />
+                        <PlayerCard player={playerB} side="right" fixtures={fixturesB} />
                     ) : (
                         <div className="flex items-center justify-center h-full text-gray-400">
                             Drop Player B
@@ -93,3 +95,4 @@ export function FaceOffZone({ className }: FaceOffZoneProps) {
         </div>
     );
 }
+

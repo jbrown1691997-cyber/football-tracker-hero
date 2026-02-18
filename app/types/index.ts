@@ -22,6 +22,7 @@ export interface Player {
     name: string;
     position: string;
     team: string;
+    teamId: number;
     photo?: string;
     stats?: PlayerStats;
 }
@@ -57,6 +58,34 @@ export interface FPLTeam {
     id: number;
     name: string;
     short_name: string;
+}
+
+export interface FPLFixture {
+    id: number;
+    event: number | null;
+    finished: boolean;
+    kickoff_time: string | null;
+    team_h: number;
+    team_a: number;
+    team_h_difficulty: number;
+    team_a_difficulty: number;
+}
+
+export interface PlayerFixture {
+    opponent: string;
+    opponentShort: string;
+    isHome: boolean;
+    difficulty: number; // 1-5 FDR
+    gameweek: number | null;
+    kickoffTime: string | null;
+}
+
+export interface PickRecommendation {
+    winner: 'A' | 'B' | 'tie';
+    winnerName: string;
+    reason: string;
+    scoreA: number;
+    scoreB: number;
 }
 
 export interface FPLBootstrapResponse {

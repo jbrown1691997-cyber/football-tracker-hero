@@ -1,12 +1,42 @@
 'use client';
 
-import { FaceOffZone, PlayerComparisonRadar } from '@/components/features/face-off';
+import { useEffect, useState, useMemo } from 'react';
+import Link from 'next/link';
+import { FaceOffZone, PlayerComparisonRadar, BestPickVerdict } from '@/components/features/face-off';
 import { SearchInput } from '@/components/features/search';
 import { useComparisonStore } from '@/lib/store/comparison-store';
-import { type Player } from '@/app/types';
+import { type Player, type FPLFixture, type PlayerFixture, type PickRecommendation } from '@/app/types';
+import { fetchFixtures, getNextFixtures, getRecommendation, getTeamMap } from '@/lib/api/fpl-api';
 
 export default function ComparePage() {
     const { playerA, playerB, setPlayerA, setPlayerB } = useComparisonStore();
+    const [fixtures, setFixtures] = useState<FPLFixture[]>([]);
+
+    // Fetch fixtures on mount
+    useEffect(() => {
+        fetchFixtures()
+            .then(setFixtures)
+            .catch((err) => console.error('Failed to load fixtures:', err));
+    }, []);
+
+    // Compute next 5 fixtures for each player
+    const teamMap = getTeamMap();
+
+    const fixturesA: PlayerFixture[] = useMemo(() => {
+        if (!playerA || fixtures.length === 0) return [];
+        return getNextFixtures(playerA.teamId, fixtures, teamMap);
+    }, [playerA, fixtures, teamMap]);
+
+    const fixturesB: PlayerFixture[] = useMemo(() => {
+        if (!playerB || fixtures.length === 0) return [];
+        return getNextFixtures(playerB.teamId, fixtures, teamMap);
+    }, [playerB, fixtures, teamMap]);
+
+    // Generate recommendation when both players selected
+    const recommendation: PickRecommendation | null = useMemo(() => {
+        if (!playerA || !playerB || fixturesA.length === 0 || fixturesB.length === 0) return null;
+        return getRecommendation(playerA, playerB, fixturesA, fixturesB);
+    }, [playerA, playerB, fixturesA, fixturesB]);
 
     const handlePlayerSelect = (player: Player) => {
         // Auto-assign to first empty slot
@@ -33,6 +63,12 @@ export default function ComparePage() {
                     <p className="text-gray-400 max-w-md mx-auto">
                         Search for players and click to add them to the comparison.
                     </p>
+                    <Link
+                        href="/form-table"
+                        className="inline-block text-sm text-gray-400 hover:text-green-400 transition-colors"
+                    >
+                        View Form Table →
+                    </Link>
                 </div>
 
                 {/* Search */}
@@ -44,12 +80,23 @@ export default function ComparePage() {
                 </div>
 
                 {/* Comparison Zone */}
-                <FaceOffZone />
+                <FaceOffZone fixturesA={fixturesA} fixturesB={fixturesB} />
 
                 {/* Radar Chart - Shows when both players selected */}
                 {showChart && (
                     <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <PlayerComparisonRadar playerA={playerA} playerB={playerB} />
+                    </div>
+                )}
+
+                {/* Best Pick Verdict - Shows when both players have fixtures */}
+                {showChart && recommendation && (
+                    <div className="mt-4">
+                        <BestPickVerdict
+                            recommendation={recommendation}
+                            playerA={playerA}
+                            playerB={playerB}
+                        />
                     </div>
                 )}
 
@@ -61,3 +108,4 @@ export default function ComparePage() {
         </main>
     );
 }
+
