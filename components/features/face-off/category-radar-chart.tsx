@@ -19,11 +19,13 @@ interface CategoryRadarChartProps {
 }
 
 // Custom Tooltip to show RAW numbers instead of normalized 0-100 values
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
         return (
             <div className="bg-gray-900 border border-gray-700 p-3 rounded-lg shadow-xl backdrop-blur-md">
                 <p className="text-gray-300 font-semibold mb-2">{label}</p>
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {payload.map((entry: any, index: number) => (
                     <div key={index} className="flex items-center gap-2 text-sm">
                         <div
